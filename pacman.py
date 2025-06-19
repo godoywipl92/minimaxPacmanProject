@@ -513,6 +513,10 @@ def readCommand(argv):
                 (2) python pacman.py --layout smallClassic --zoom 2
                 OR  python pacman.py -l smallClassic -z 2
                     - starts an interactive game on a smaller board, zoomed in
+                (3) python pacman.py --pacman MinimaxAgent
+                    - starts a game with Minimax agent
+                (4) python pacman.py --pacman MinimaxAgent --depth 3
+                    - starts a game with Minimax agent at depth 3
     """
     parser = OptionParser(usageStr)
 
@@ -554,6 +558,8 @@ def readCommand(argv):
                       help='Turns on exception handling and timeouts during games', default=False)
     parser.add_option('--timeout', dest='timeout', type='int',
                       help=default('Maximum length of time an agent can spend computing in a single game'), default=30)
+    parser.add_option('--depth', dest='depth', type='int',
+                      help='Depth for Minimax algorithm (default: 2)', default=2)
 
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
@@ -574,6 +580,11 @@ def readCommand(argv):
         options.textGraphics or options.quietGraphics)
     pacmanType = loadAgent(options.pacman, noKeyboard)
     agentOpts = parseAgentArgs(options.agentArgs)
+    
+    # Add depth parameter if specified
+    if hasattr(options, 'depth') and options.depth is not None:
+        agentOpts['depth'] = options.depth
+    
     if options.numTraining > 0:
         args['numTraining'] = options.numTraining
         if 'numTraining' not in agentOpts:
